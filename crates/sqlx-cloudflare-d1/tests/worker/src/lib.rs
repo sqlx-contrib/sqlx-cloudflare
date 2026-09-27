@@ -299,7 +299,7 @@ async fn execute_reports_changes(conn: &mut D1Connection) -> Outcome {
 
     ensure(inserted.rows_affected() == 1, "insert rows_affected")?;
     ensure(
-        inserted.last_insert_rowid() == Some(id),
+        inserted.last_insert_rowid() == id,
         format!(
             "last_insert_rowid {:?}, id {id}",
             inserted.last_insert_rowid()

@@ -2,14 +2,14 @@
 #[derive(Debug, Default, Clone, PartialEq, Eq)]
 pub struct QueryResult {
     rows_affected: u64,
-    last_insert_rowid: Option<i64>,
+    last_insert_rowid: i64,
 }
 
 impl QueryResult {
-    /// A result reporting `rows_affected` and, when the backend knows one,
-    /// `last_insert_rowid`.
+    /// A result reporting `rows_affected` and `last_insert_rowid`, 0 when the
+    /// backend reports none.
     #[must_use]
-    pub fn new(rows_affected: u64, last_insert_rowid: Option<i64>) -> Self {
+    pub fn new(rows_affected: u64, last_insert_rowid: i64) -> Self {
         Self {
             rows_affected,
             last_insert_rowid,
@@ -22,9 +22,15 @@ impl QueryResult {
         self.rows_affected
     }
 
-    /// The rowid of the last row inserted, when the backend reports one.
+    /// The rowid of the last row inserted, or 0 when the statement inserted
+    /// none.
+    ///
+    /// An `i64` rather than an `Option`, as sqlx-sqlite reports it, so code
+    /// written against `SqliteQueryResult` compiles unchanged. Rowids start
+    /// at 1 unless a row is given 0 explicitly, so 0 is unambiguous in
+    /// practice; `RETURNING` is the way to be certain.
     #[must_use]
-    pub fn last_insert_rowid(&self) -> Option<i64> {
+    pub fn last_insert_rowid(&self) -> i64 {
         self.last_insert_rowid
     }
 }
@@ -36,7 +42,9 @@ impl Extend<QueryResult> for QueryResult {
             // The last statement that reported a rowid, not the last
             // statement: a trailing SELECT reporting none should not erase
             // the INSERT before it.
-            self.last_insert_rowid = result.last_insert_rowid.or(self.last_insert_rowid);
+            if result.last_insert_rowid != 0 {
+                self.last_insert_rowid = result.last_insert_rowid;
+            }
         }
     }
 }
@@ -93,12 +101,12 @@ mod tests {
         let mut result = QueryResult::default();
 
         result.extend([
-            QueryResult::new(2, Some(7)),
-            QueryResult::new(1, Some(9)),
-            QueryResult::new(0, None),
+            QueryResult::new(2, 7),
+            QueryResult::new(1, 9),
+            QueryResult::new(0, 0),
         ]);
 
         assert_eq!(result.rows_affected(), 3);
-        assert_eq!(result.last_insert_rowid(), Some(9));
+        assert_eq!(result.last_insert_rowid(), 9);
     }
 }

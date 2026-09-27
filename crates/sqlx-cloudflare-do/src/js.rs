@@ -117,7 +117,7 @@ pub(crate) fn execute(
 
     let result = QueryResult::new(
         u64::try_from(changes).map_err(|error| Error::Decode(error.into()))?,
-        Some(rowid),
+        rowid,
     );
 
     Ok((rows, result))
