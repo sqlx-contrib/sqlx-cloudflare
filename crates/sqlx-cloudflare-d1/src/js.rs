@@ -199,7 +199,7 @@ fn query_result(result: &D1ResultSys) -> Result<D1QueryResult, Error> {
 
     Ok(QueryResult::new(
         number("changes").map_or(0, whole_number_u64),
-        number("last_row_id").map(whole_number_i64),
+        number("last_row_id").map_or(0, whole_number_i64),
     ))
 }
 

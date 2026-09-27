@@ -146,8 +146,8 @@ let names: Vec<String> = conn
   returning the error.
 - **`rows_affected` comes from `changes()`.** Like SQLite's own count, it
   covers the rows the statement itself inserted, updated or deleted, not those
-  its triggers touched. A statement that wrote nothing reports 0 and no
-  `last_insert_rowid`.
+  its triggers touched. A statement that wrote nothing reports 0 for both
+  `rows_affected` and `last_insert_rowid`.
 - **No `sqlx::migrate!`.** Create the schema from the object's constructor.
 - **No derived TEXT enums.** `#[derive(sqlx::Type)]` works for
   `#[sqlx(transparent)]` newtypes and `#[repr(i32)]` enums, but sqlx only

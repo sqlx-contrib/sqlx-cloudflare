@@ -360,7 +360,7 @@ async fn execute_reports_changes(conn: &mut DoConnection) -> Outcome {
 
     ensure(inserted.rows_affected() == 1, "insert rows_affected")?;
     ensure(
-        inserted.last_insert_rowid() == Some(id),
+        inserted.last_insert_rowid() == id,
         format!(
             "last_insert_rowid {:?}, id {id}",
             inserted.last_insert_rowid()
@@ -735,7 +735,7 @@ async fn select_reports_no_changes(conn: &mut DoConnection) -> Outcome {
         format!("SELECT rows_affected {}", selected.rows_affected()),
     )?;
     ensure(
-        selected.last_insert_rowid().is_none(),
+        selected.last_insert_rowid() == 0,
         format!(
             "SELECT last_insert_rowid {:?}",
             selected.last_insert_rowid()
