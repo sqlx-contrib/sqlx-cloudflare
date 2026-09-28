@@ -28,7 +28,7 @@ async fn fetch(
     env: worker::Env,
     _ctx: worker::Context,
 ) -> worker::Result<worker::Response> {
-    let mut conn = sqlx_cloudflare_hd::connect(&env, "HYPERDRIVE")
+    let mut conn = sqlx_cloudflare_hd::postgres::connect(&env, "HYPERDRIVE")
         .await
         .map_err(|e| worker::Error::RustError(e.to_string()))?;
 
@@ -45,11 +45,29 @@ async fn fetch(
 }
 ```
 
-There is no driver in here. Hyperdrive speaks the Postgres wire protocol, so
-this crate opens the Worker's socket to the binding, settles TLS through the
-Workers runtime, and hands the socket to sqlx's Postgres driver. What comes
-back is a plain `PgConnection`: every type sqlx-postgres maps, `query_as`,
-`#[derive(sqlx::FromRow)]`, transactions and `sqlx::migrate!`.
+There is no driver in here. Hyperdrive speaks the wire protocol of the
+database behind it, so this crate opens the Worker's socket to the binding,
+settles TLS through the Workers runtime, and hands the socket to sqlx's own
+driver. For Postgres, what comes back is a plain `PgConnection`: every type
+sqlx-postgres maps, `query_as`, `#[derive(sqlx::FromRow)]`, transactions and
+`sqlx::migrate!`.
+
+## Install
+
+One feature per database, as sqlx has, and none by default:
+
+```toml
+[dependencies]
+sqlx-cloudflare-hd = { version = "0.1", features = ["postgres"] }
+sqlx = { version = "0.9", default-features = false, features = ["postgres", "derive"] }
+worker = "0.8"
+```
+
+| Feature | Module | Connection |
+|---|---|---|
+| `postgres` | `sqlx_cloudflare_hd::postgres` | `sqlx::PgConnection` |
+
+MySQL, which Hyperdrive also fronts, is not supported yet.
 
 Connect once per request. Hyperdrive pools the connections to your database,
 and a Worker cannot share a socket across requests anyway, so there is no
@@ -58,13 +76,14 @@ same reason there is no `PgListener`.
 
 ## Options
 
-`connect` uses the options Hyperdrive hands out. To change any of them while
-keeping the credentials, start from `options` and connect with `connect_with`:
+`postgres::connect` uses the options Hyperdrive hands out. To change any of
+them while keeping the credentials, start from `postgres::options` and connect
+with `postgres::connect_with`:
 
 ```rust
 let hyperdrive = env.hyperdrive("HYPERDRIVE")?;
-let options = sqlx_cloudflare_hd::options(&hyperdrive)?.application_name("my-worker");
-let mut conn = sqlx_cloudflare_hd::connect_with(&hyperdrive, &options).await?;
+let options = sqlx_cloudflare_hd::postgres::options(&hyperdrive)?.application_name("my-worker");
+let mut conn = sqlx_cloudflare_hd::postgres::connect_with(&hyperdrive, &options).await?;
 ```
 
 The socket always goes to Hyperdrive's host and port. `sslmode` is honoured,

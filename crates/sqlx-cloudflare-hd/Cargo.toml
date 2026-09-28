@@ -19,13 +19,22 @@ publish = false
 [lints]
 workspace = true
 
+# One feature per database Hyperdrive fronts, as sqlx has: each pulls in that
+# sqlx driver and adds its module. None by default -- pick the one your
+# Hyperdrive configuration points at.
+[features]
+default = []
+postgres = ["dep:sqlx-postgres", "dep:tokio"]
+
 [dependencies]
 sqlx-core = { workspace = true }
-sqlx-postgres = { workspace = true }
+sqlx-postgres = { workspace = true, optional = true }
 worker = { workspace = true }
-tokio = { workspace = true }
+# Only for the `AsyncRead`/`AsyncWrite` traits the socket adapter uses, so only
+# with a driver that needs the adapter.
+tokio = { workspace = true, optional = true }
 
-# sqlx-postgres draws its SCRAM nonces through `rand`, and on
+# The sqlx drivers draw their auth nonces through `rand`, and on
 # wasm32-unknown-unknown `getrandom` refuses to build until told where
 # randomness comes from: `wasm_js` is the JS host's `crypto.getRandomValues`.
 # Enabled here so no consumer has to know.
@@ -33,8 +42,11 @@ tokio = { workspace = true }
 getrandom = { version = "0.4", features = ["wasm_js"] }
 
 [dev-dependencies]
-# The facade, for the crate docs' example: what a consumer writes against.
-sqlx = { workspace = true, features = ["postgres"] }
+# The facade, for the docs' example: what a consumer writes against. `macros`
+# is sqlx's default, and the one that turns on `sqlx-postgres/offline` to match
+# the workspace's `sqlx-core/offline` -- without it, a build with no features of
+# this crate's own gets sqlx-postgres through here alone, missing `describe`.
+sqlx = { workspace = true, features = ["postgres", "macros"] }
 # `tests/driver.rs` drives the test Worker over plain HTTP on localhost, so no TLS.
 ureq = { workspace = true }
 serde_json = { workspace = true }

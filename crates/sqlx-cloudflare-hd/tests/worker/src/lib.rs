@@ -75,7 +75,7 @@ fn fail(error: sqlx::Error) -> String {
 }
 
 async fn connect(env: &Env) -> Result<PgConnection, String> {
-    sqlx_cloudflare_hd::connect(env, "HD").await.map_err(fail)
+    sqlx_cloudflare_hd::postgres::connect(env, "HD").await.map_err(fail)
 }
 
 async fn binds_and_scalars(env: Env) -> Outcome {
@@ -232,10 +232,10 @@ async fn migrations(env: Env) -> Outcome {
 
 async fn ssl_disable_connects(env: Env) -> Outcome {
     let hd = env.hyperdrive("HD").map_err(|e| e.to_string())?;
-    let options = sqlx_cloudflare_hd::options(&hd)
+    let options = sqlx_cloudflare_hd::postgres::options(&hd)
         .map_err(fail)?
         .ssl_mode(PgSslMode::Disable);
-    let mut conn = sqlx_cloudflare_hd::connect_with(&hd, &options)
+    let mut conn = sqlx_cloudflare_hd::postgres::connect_with(&hd, &options)
         .await
         .map_err(fail)?;
     conn.ping().await.map_err(fail)
@@ -243,10 +243,10 @@ async fn ssl_disable_connects(env: Env) -> Outcome {
 
 async fn ssl_require_fails_without_server_tls(env: Env) -> Outcome {
     let hd = env.hyperdrive("HD").map_err(|e| e.to_string())?;
-    let options = sqlx_cloudflare_hd::options(&hd)
+    let options = sqlx_cloudflare_hd::postgres::options(&hd)
         .map_err(fail)?
         .ssl_mode(PgSslMode::Require);
-    match sqlx_cloudflare_hd::connect_with(&hd, &options).await {
+    match sqlx_cloudflare_hd::postgres::connect_with(&hd, &options).await {
         Ok(_) => Err("connected without TLS under `require`".into()),
         Err(sqlx::Error::Tls(_)) => Ok(()),
         Err(error) => Err(format!("wrong error: {error:?}")),
@@ -255,10 +255,10 @@ async fn ssl_require_fails_without_server_tls(env: Env) -> Outcome {
 
 async fn connect_with_custom_options(env: Env) -> Outcome {
     let hd = env.hyperdrive("HD").map_err(|e| e.to_string())?;
-    let options = sqlx_cloudflare_hd::options(&hd)
+    let options = sqlx_cloudflare_hd::postgres::options(&hd)
         .map_err(fail)?
         .application_name("hd-test");
-    let mut conn = sqlx_cloudflare_hd::connect_with(&hd, &options)
+    let mut conn = sqlx_cloudflare_hd::postgres::connect_with(&hd, &options)
         .await
         .map_err(fail)?;
     let name: String = sqlx::query_scalar("SELECT current_setting('application_name')")

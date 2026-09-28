@@ -30,6 +30,21 @@ pub(crate) struct HdSocket {
 }
 
 impl HdSocket {
+    /// Opens a socket to `hyperdrive`'s host and port.
+    ///
+    /// `StartTls` for a driver that may upgrade the socket later, with
+    /// [`into_inner`](Self::into_inner) and `start_tls`; `Off` otherwise.
+    pub(crate) fn connect(
+        hyperdrive: &worker::Hyperdrive,
+        transport: worker::SecureTransport,
+    ) -> Result<Self, sqlx_core::Error> {
+        let socket = worker::Socket::builder()
+            .secure_transport(transport)
+            .connect(hyperdrive.host(), hyperdrive.port())
+            .map_err(|e| sqlx_core::Error::Io(io::Error::other(e.to_string())))?;
+        Ok(Self::new(socket))
+    }
+
     pub(crate) fn new(inner: worker::Socket) -> Self {
         Self {
             inner,
