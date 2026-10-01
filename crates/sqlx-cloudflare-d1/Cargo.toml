@@ -1,7 +1,7 @@
 [package]
 name = "sqlx-cloudflare-d1"
 description = "A Cloudflare D1 driver for sqlx: an sqlx::Database over the Workers D1 binding"
-version = "0.1.0" # literal, not inherited -- see [workspace.package]
+version = "0.2.0" # literal, not inherited -- see [workspace.package]
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
@@ -22,7 +22,7 @@ default = []
 # `version` alongside `path` because `cargo publish` refuses a path dependency
 # without one -- the published crate has no sibling directory to resolve, only
 # a registry. release-please's cargo-workspace plugin keeps it in step.
-sqlx-cloudflare-core = { path = "../sqlx-cloudflare-core", version = "0.1.0" }
+sqlx-cloudflare-core = { path = "../sqlx-cloudflare-core", version = "0.2.0" }
 sqlx-core = { workspace = true }
 worker = { workspace = true, features = ["d1"] }
 wasm-bindgen = { workspace = true }
