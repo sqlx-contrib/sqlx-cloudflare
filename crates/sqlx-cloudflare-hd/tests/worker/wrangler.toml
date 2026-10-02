@@ -1,0 +1,14 @@
+# Served by `wrangler dev --local` only: no Cloudflare account is involved,
+# and the Hyperdrive id below names nothing real. run.sh starts a scratch
+# Postgres and points the binding at it through
+# CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HD.
+name = "sqlx-cloudflare-hd-test"
+main = "build/worker/shim.mjs"
+compatibility_date = "2026-01-01"
+
+[build]
+command = "worker-build --release"
+
+[[hyperdrive]]
+binding = "HD"
+id = "00000000000000000000000000000000"

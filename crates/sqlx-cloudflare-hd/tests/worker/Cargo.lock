@@ -41,12 +41,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
-name = "base64"
-version = "0.23.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
-
-[[package]]
 name = "bitflags"
 version = "2.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -446,12 +440,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "httparse"
-version = "1.10.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6dbf3de79e51f3d586ab4cb9d5c3e2c14aa28ed23d180cf89b4df0454a69cc87"
-
-[[package]]
 name = "hybrid-array"
 version = "0.4.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -608,9 +596,9 @@ dependencies = [
 
 [[package]]
 name = "libsqlite3-sys"
-version = "0.37.0"
+version = "0.38.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b1f111c8c41e7c61a49cd34e44c7619462967221a6443b0ec299e0ac30cfb9b1"
+checksum = "f1d20bef17f513b9b3004532233187769cd072d790971f4e4da0e346eb6401e8"
 dependencies = [
  "pkg-config",
  "vcpkg",
@@ -932,9 +920,9 @@ checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 
 [[package]]
 name = "smallvec"
-version = "1.16.1"
+version = "1.16.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ba467056f1b547ed52077911161fc86985becbc60e8e1857c8a144dab0def891"
+checksum = "f9395f0f0eee849a9b707b2f06bb92a6a422090e2123bb2ef8e87a0e61892a8e"
 dependencies = [
  "serde",
 ]
@@ -961,59 +949,23 @@ dependencies = [
 ]
 
 [[package]]
-name = "sqlx-cloudflare-core"
-version = "0.1.0"
-dependencies = [
- "js-sys",
- "sqlx-core",
- "wasm-bindgen",
-]
-
-[[package]]
-name = "sqlx-cloudflare-d1"
-version = "0.1.0"
-dependencies = [
- "futures-core",
- "futures-util",
- "js-sys",
- "log",
- "serde_json",
- "sqlx",
- "sqlx-cloudflare-core",
- "sqlx-core",
- "ureq",
- "wasm-bindgen",
- "worker",
-]
-
-[[package]]
-name = "sqlx-cloudflare-do"
-version = "0.2.0"
-dependencies = [
- "futures-core",
- "futures-util",
- "js-sys",
- "log",
- "serde_json",
- "sqlx",
- "sqlx-cloudflare-core",
- "sqlx-core",
- "ureq",
- "wasm-bindgen",
- "worker",
-]
-
-[[package]]
 name = "sqlx-cloudflare-hd"
 version = "0.0.0"
 dependencies = [
  "getrandom",
- "serde_json",
- "sqlx",
  "sqlx-core",
  "sqlx-postgres",
  "tokio",
- "ureq",
+ "worker",
+]
+
+[[package]]
+name = "sqlx-cloudflare-hd-test-worker"
+version = "0.0.0"
+dependencies = [
+ "serde_json",
+ "sqlx",
+ "sqlx-cloudflare-hd",
  "worker",
 ]
 
@@ -1022,7 +974,7 @@ name = "sqlx-core"
 version = "0.9.0"
 source = "git+https://github.com/iamralch/sqlx?rev=4313dae17eb0d985e905022fe5e9ab862ec14e86#4313dae17eb0d985e905022fe5e9ab862ec14e86"
 dependencies = [
- "base64 0.22.1",
+ "base64",
  "bytes",
  "cfg-if",
  "crc",
@@ -1091,6 +1043,7 @@ dependencies = [
  "bitflags",
  "byteorder",
  "bytes",
+ "crc",
  "digest",
  "dotenvy",
  "either",
@@ -1113,7 +1066,7 @@ version = "0.9.0"
 source = "git+https://github.com/iamralch/sqlx?rev=4313dae17eb0d985e905022fe5e9ab862ec14e86#4313dae17eb0d985e905022fe5e9ab862ec14e86"
 dependencies = [
  "atoi",
- "base64 0.22.1",
+ "base64",
  "bitflags",
  "byteorder",
  "crc",
@@ -1237,18 +1190,18 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.20"
+version = "2.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec86235f5fcc2a73650310756d2ac5b138a5780bbbdfae3eeccec992c435ba4f"
+checksum = "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e"
 dependencies = [
  "thiserror-impl",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.20"
+version = "2.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af"
+checksum = "fe5197923287db20a58125f0bc85c062f7f2c892de97b18c356f9efb14b28524"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1346,31 +1299,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7df058c713841ad818f1dc5d3fd88063241cc61f49f5fbea4b951e8cf5a8d71d"
 
 [[package]]
-name = "ureq"
-version = "3.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a7ac20be9b7726e0bbdbf974c059676d9acb1cd414961f570a4e8231cacd7fc"
-dependencies = [
- "base64 0.23.1",
- "log",
- "percent-encoding",
- "ureq-proto",
- "utf8-zero",
-]
-
-[[package]]
-name = "ureq-proto"
-version = "0.6.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f86fd172ccca569e458f61b6bdd6220965a9ef36e672a6852953b51a0e1583be"
-dependencies = [
- "base64 0.23.1",
- "http",
- "httparse",
- "log",
-]
-
-[[package]]
 name = "url"
 version = "2.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1381,12 +1309,6 @@ dependencies = [
  "percent-encoding",
  "serde",
 ]
-
-[[package]]
-name = "utf8-zero"
-version = "0.8.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8c0a043c9540bae7c578c88f91dda8bd82e59ae27c21baca69c8b191aaf5a6e"
 
 [[package]]
 name = "utf8_iter"
