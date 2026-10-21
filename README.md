@@ -15,6 +15,7 @@
 |---|---|---|---|
 | [`sqlx-cloudflare-d1`](crates/sqlx-cloudflare-d1) | [![crates.io](https://img.shields.io/crates/v/sqlx-cloudflare-d1.svg)](https://crates.io/crates/sqlx-cloudflare-d1) | [![docs.rs](https://img.shields.io/docsrs/sqlx-cloudflare-d1)](https://docs.rs/sqlx-cloudflare-d1) | A driver for Cloudflare D1, over the Workers D1 binding |
 | [`sqlx-cloudflare-do`](crates/sqlx-cloudflare-do) | [![crates.io](https://img.shields.io/crates/v/sqlx-cloudflare-do.svg)](https://crates.io/crates/sqlx-cloudflare-do) | [![docs.rs](https://img.shields.io/docsrs/sqlx-cloudflare-do)](https://docs.rs/sqlx-cloudflare-do) | A driver for a Durable Object's SQL storage |
+| [`sqlx-cloudflare-hd`](crates/sqlx-cloudflare-hd) | unreleased | -- | sqlx's own Postgres driver over a Hyperdrive binding -- waiting on [transact-rs/sqlx#4426](https://github.com/transact-rs/sqlx/issues/4426) |
 | [`sqlx-cloudflare-core`](crates/sqlx-cloudflare-core) | [![crates.io](https://img.shields.io/crates/v/sqlx-cloudflare-core.svg)](https://crates.io/crates/sqlx-cloudflare-core) | [![docs.rs](https://img.shields.io/docsrs/sqlx-cloudflare-core)](https://docs.rs/sqlx-cloudflare-core) | The internals both drivers share -- not a dependency of yours |
 
 Each driver is independent: depend on the one for the storage you use. Both
