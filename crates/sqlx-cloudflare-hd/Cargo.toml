@@ -1,0 +1,56 @@
+[package]
+name = "sqlx-cloudflare-hd"
+description = "Cloudflare Hyperdrive for sqlx: sqlx's own Postgres driver over a Workers Hyperdrive binding"
+version = "0.0.0" # literal, not inherited -- see [workspace.package]
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "README.md"
+keywords = ["sqlx", "cloudflare", "hyperdrive", "workers", "postgres"]
+categories = ["database", "wasm"]
+# The test Worker is not part of the library.
+exclude = ["tests/worker"]
+# Not until sqlx releases what this crate needs (transact-rs/sqlx#4426): until
+# then it builds against a git branch, which crates.io will not take. Nor is it
+# in the release-please config, for the same reason.
+publish = false
+
+[lints]
+workspace = true
+
+# One feature per database Hyperdrive fronts, as sqlx has: each pulls in that
+# sqlx driver and adds its module. None by default -- pick the one your
+# Hyperdrive configuration points at.
+[features]
+default = []
+postgres = ["dep:sqlx-postgres", "dep:tokio"]
+
+[dependencies]
+sqlx-core = { workspace = true }
+sqlx-postgres = { workspace = true, optional = true }
+worker = { workspace = true }
+# Only for the `AsyncRead`/`AsyncWrite` traits the socket adapter uses, so only
+# with a driver that needs the adapter.
+tokio = { workspace = true, optional = true }
+
+# The sqlx drivers draw their auth nonces through `rand`, and on
+# wasm32-unknown-unknown `getrandom` refuses to build until told where
+# randomness comes from: `wasm_js` is the JS host's `crypto.getRandomValues`.
+# Enabled here so no consumer has to know.
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+getrandom = { version = "0.4", features = ["wasm_js"] }
+
+[dev-dependencies]
+# The facade, for the docs' example: what a consumer writes against. `macros`
+# is sqlx's default, and the one that turns on `sqlx-postgres/offline` to match
+# the workspace's `sqlx-core/offline` -- without it, a build with no features of
+# this crate's own gets sqlx-postgres through here alone, missing `describe`.
+sqlx = { workspace = true, features = ["postgres", "macros"] }
+# `tests/driver.rs` drives the test Worker over plain HTTP on localhost, so no TLS.
+ureq = { workspace = true }
+serde_json = { workspace = true }
+
+[package.metadata.docs.rs]
+all-features = true
+targets = ["wasm32-unknown-unknown"]

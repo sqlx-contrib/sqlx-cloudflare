@@ -10,7 +10,7 @@
 # checked on the host says nothing about the one target that matters.
 #
 # `make test` needs no Worker: each driver's tests/driver.rs skips itself
-# unless its D1_WORKER_URL or DO_WORKER_URL is set. `make test-worker` builds
+# unless its D1_WORKER_URL, DO_WORKER_URL or HD_WORKER_URL is set. `make test-worker` builds
 # and serves each driver's test Worker in turn and sets it.
 
 WASM := --target wasm32-unknown-unknown
@@ -29,12 +29,14 @@ test:
 
 # The integration tests: builds each driver's test Worker, serves it with
 # `wrangler dev --local` on fresh local storage -- a D1 database, a Durable
-# Object -- and runs every scenario in it. No Cloudflare account involved --
-# see run.sh next to each test Worker.
+# Object, a scratch Postgres behind a Hyperdrive binding -- and runs every
+# scenario in it. No Cloudflare account involved -- see run.sh next to each
+# test Worker.
 .PHONY: test-worker
 test-worker:
 	crates/sqlx-cloudflare-d1/tests/worker/run.sh
 	crates/sqlx-cloudflare-do/tests/worker/run.sh
+	crates/sqlx-cloudflare-hd/tests/worker/run.sh
 
 # Both targets for clippy too: `cfg(target_arch = "wasm32")` code is invisible
 # to a host-only run.

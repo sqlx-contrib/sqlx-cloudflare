@@ -7,6 +7,7 @@ members = ["crates/*"]
 exclude = [
     "crates/sqlx-cloudflare-d1/tests/worker",
     "crates/sqlx-cloudflare-do/tests/worker",
+    "crates/sqlx-cloudflare-hd/tests/worker",
 ]
 
 [workspace.package]
@@ -43,7 +44,13 @@ sqlx-core = { version = "0.9", default-features = false, features = ["offline"] 
 # The facade, for tests only: proving a consumer naming `sqlx::Database` sees
 # a driver's database type.
 sqlx = { version = "0.9", default-features = false }
+# The Postgres driver itself, for sqlx-cloudflare-hd: Hyperdrive speaks the
+# Postgres wire protocol, so there is no driver to write, only a socket to
+# hand it. `offline` for the same reason as `sqlx-core` above.
+sqlx-postgres = { version = "0.9", default-features = false, features = ["offline"] }
 worker = { version = "0.8.6", default-features = false }
+# Only for the `AsyncRead`/`AsyncWrite` traits `worker::Socket` implements.
+tokio = { version = "1", default-features = false }
 wasm-bindgen = "0.2"
 js-sys = "0.3"
 futures-core = { version = "0.3", default-features = false }
@@ -51,3 +58,13 @@ futures-util = { version = "0.3", default-features = false }
 log = { version = "0.4", default-features = false }
 ureq = { version = "3", default-features = false }
 serde_json = "1"
+
+# sqlx-cloudflare-hd needs two changes sqlx has not released yet -- a way to
+# hand `PgConnection` a socket, and an `Instant` that does not panic on
+# wasm32-unknown-unknown -- proposed in transact-rs/sqlx#4426. Until they ship,
+# every sqlx crate comes from that branch, pinned to a commit: a patch applies
+# to the whole graph, so D1 and DO build against it too.
+[patch.crates-io]
+sqlx = { git = "https://github.com/iamralch/sqlx", rev = "4313dae17eb0d985e905022fe5e9ab862ec14e86" }
+sqlx-core = { git = "https://github.com/iamralch/sqlx", rev = "4313dae17eb0d985e905022fe5e9ab862ec14e86" }
+sqlx-postgres = { git = "https://github.com/iamralch/sqlx", rev = "4313dae17eb0d985e905022fe5e9ab862ec14e86" }

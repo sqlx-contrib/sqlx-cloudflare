@@ -1,0 +1,27 @@
+# The Worker the integration tests run against. Not part of the published
+# crate, and its own package rather than a workspace member: it only builds
+# for wasm32-unknown-unknown, through `worker-build`, and keeps its own lock.
+[package]
+name = "sqlx-cloudflare-hd-test-worker"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+sqlx-cloudflare-hd = { path = "../..", features = ["postgres"] }
+sqlx = { version = "0.9", default-features = false, features = ["postgres", "derive", "macros", "migrate"] }
+worker = "0.8.6"
+serde_json = "1"
+
+# The same sqlx branch as the workspace (see its Cargo.toml): a patch there
+# does not reach a package outside it.
+[patch.crates-io]
+sqlx = { git = "https://github.com/iamralch/sqlx", rev = "4313dae17eb0d985e905022fe5e9ab862ec14e86" }
+sqlx-core = { git = "https://github.com/iamralch/sqlx", rev = "4313dae17eb0d985e905022fe5e9ab862ec14e86" }
+sqlx-postgres = { git = "https://github.com/iamralch/sqlx", rev = "4313dae17eb0d985e905022fe5e9ab862ec14e86" }
+
+[profile.release]
+opt-level = "s"

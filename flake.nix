@@ -44,6 +44,9 @@
             pkgs.worker-build
             pkgs.wrangler
             pkgs.nodejs
+            # sqlx-cloudflare-hd's integration tests: its run.sh starts a
+            # scratch cluster for the local Hyperdrive binding to point at.
+            pkgs.postgresql
           ];
         };
       }
