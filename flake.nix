@@ -41,10 +41,27 @@
             # The integration tests: `worker-build` turns the test Worker into
             # a wasm module and its JavaScript shim, and `wrangler dev --local`
             # serves it against a local D1 -- no Cloudflare account involved.
-            # nixpkgs' build of worker-build probes pkg-config for libzstd
-            # (zstd-sys) but doesn't declare it, so it fails to build.
-            (pkgs.worker-build.overrideAttrs (old: {
-              buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.zstd ];
+            # worker-build must match the `worker` the Workers use, and refuses
+            # a newer one: nixpkgs has 0.8.7, we are on `worker` 0.9. Drop the
+            # override once nixpkgs catches up.
+            #
+            # nixpkgs builds the -sys crates against system libraries, and
+            # zstd-sys finds no libzstd; let it build its own instead.
+            (pkgs.worker-build.overrideAttrs (old: rec {
+              version = "0.9.0";
+              src = pkgs.fetchFromGitHub {
+                owner = "cloudflare";
+                repo = "workers-rs";
+                tag = "v${version}";
+                hash = "sha256-zmeQp7db2rwfECp9p5NthKvzsZFnQPFO+eueIhFsIwE=";
+                fetchSubmodules = true;
+              };
+              cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+                inherit src;
+                name = "worker-build-${version}-vendor";
+                hash = "sha256-EbRwSrxRys2EcDfB88apmH5Rm0NUWLKtmGPS77fAhpI=";
+              };
+              dontCargoUseSystemLibs = true;
             }))
             pkgs.wrangler
             pkgs.nodejs
