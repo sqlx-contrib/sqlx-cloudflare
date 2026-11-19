@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/sqlx-contrib/sqlx-cloudflare/compare/sqlx-cloudflare-d1-v0.2.0...sqlx-cloudflare-d1-v0.2.1) (2026-11-19)
+
+
+### Bug Fixes
+
+* **test:** bump test worker lock to worker 0.8.7 ([4d4f326](https://github.com/sqlx-contrib/sqlx-cloudflare/commit/4d4f326c548307fda5ad26b8bd582e44bc928c0a))
+* **test:** move the test workers to worker 0.9 ([6c33d99](https://github.com/sqlx-contrib/sqlx-cloudflare/commit/6c33d993ac66b3fdf846ac783ff6256eff0a7f0d))
+
 ## [0.2.0](https://github.com/sqlx-contrib/sqlx-cloudflare/compare/sqlx-cloudflare-d1-v0.1.0...sqlx-cloudflare-d1-v0.2.0) (2026-10-01)
 
 
