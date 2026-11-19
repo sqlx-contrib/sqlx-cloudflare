@@ -41,7 +41,11 @@
             # The integration tests: `worker-build` turns the test Worker into
             # a wasm module and its JavaScript shim, and `wrangler dev --local`
             # serves it against a local D1 -- no Cloudflare account involved.
-            pkgs.worker-build
+            # nixpkgs' build of worker-build probes pkg-config for libzstd
+            # (zstd-sys) but doesn't declare it, so it fails to build.
+            (pkgs.worker-build.overrideAttrs (old: {
+              buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.zstd ];
+            }))
             pkgs.wrangler
             pkgs.nodejs
           ];
