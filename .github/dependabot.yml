@@ -15,7 +15,11 @@ updates:
       prefix: "chore"
       include: "scope"
   - package-ecosystem: "cargo"
-    directory: "/"
+    # The test worker is its own package with its own lock, outside the
+    # workspace; bump both together so their `worker` versions stay in step.
+    directories:
+      - "/"
+      - "/crates/sqlx-cloudflare-d1/tests/worker"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
